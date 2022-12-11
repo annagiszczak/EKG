@@ -25,11 +25,12 @@ class MainWindow(QMainWindow):
         self.ecg_clean_methods = ["neurokit", "biosppy", "pantompkins1985", "hamilton2002", "elgendi2010", "engzeemod2012"]        
         
         def create_menuBar():
-            def open():
-                # self.x = np.arange(0,15000)
-                # self.ecg = nk.ecg_simulate(duration = 15, sampling_rate = 1000, heart_rate = 80)
-                # ecg_line.setData(self.x, self.ecg)
-                
+            def open_sim():
+                self.x = np.arange(0,15000)
+                self.ecg = nk.ecg_simulate(duration = 15, sampling_rate = 1000, heart_rate = 80)
+                ecg_line.setData(self.x, self.ecg)
+
+            def open_file():
                 #read file
                 filename = QFileDialog.getOpenFileName(self, 'Open file', './data/')
                 #read file
@@ -46,9 +47,15 @@ class MainWindow(QMainWindow):
 
             self.menuBar = self.menuBar()
 
-            open_action = QAction('Open', self)
-            open_action.triggered.connect(lambda:open())
-            self.menuBar.addAction(open_action)
+            self.openMenu = self.menuBar.addMenu('Open')
+
+            open_file_action = QAction('Open File', self)
+            open_file_action.triggered.connect(lambda:open_file())
+            self.openMenu.addAction(open_file_action)
+
+            open_sim_action = QAction('Open Sim', self)
+            open_sim_action.triggered.connect(lambda:open_sim())
+            self.openMenu.addAction(open_sim_action)
 
             save_action = QAction('Save', self)
             save_action.triggered.connect(lambda:save())
