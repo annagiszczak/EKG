@@ -26,9 +26,13 @@ class MainWindow(QMainWindow):
         
         def create_menuBar():
             def open():
-                self.x = np.arange(0,15000)
-                self.ecg = nk.ecg_simulate(duration = 15, sampling_rate = 1000, heart_rate = 80)
-                ecg_line.setData(self.x, self.ecg)
+                # self.x = np.arange(0,15000)
+                # self.ecg = nk.ecg_simulate(duration = 15, sampling_rate = 1000, heart_rate = 80)
+                # ecg_line.setData(self.x, self.ecg)
+                
+                #read file
+                filename = QFileDialog.getOpenFileName(self, 'Open file', './data/')
+                #read file
 
             def save():
                 print('clicked save')
@@ -84,6 +88,8 @@ class MainWindow(QMainWindow):
                 s, info = nk.ecg_peaks(self.ecg, method = 'neurokit', correct_artifacts = True)
                 for peaks in info["ECG_R_Peaks"]:
                     self.graphWidget.addItem(pg.InfiniteLine(peaks, pen = pg.mkPen(color=(255, 0, 0))))
+                   
+
 
         def create_ecg_peaks_combo():
             ecg_peak_label = QLabel("Find peak method")
@@ -94,7 +100,9 @@ class MainWindow(QMainWindow):
                 ecg_peaks.addItem(method)
 
             self.comboLayout.addWidget(ecg_peaks)
-            ecg_peaks.activated[int].connect(ecg_peaks_f)   
+            ecg_peaks.activated[int].connect(ecg_peaks_f)  
+
+
 
         create_menuBar()
 
