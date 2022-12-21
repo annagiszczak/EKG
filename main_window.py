@@ -54,37 +54,11 @@ class MainWindow(QMainWindow):
                     ecg_line.setData(self.x, self.ecg)
 
                 #open .dat file
-                elif filename[0].endswith('.dat'):                   
-                    # load a record using the 'rdrecord' function
-                    # record = wfdb.rdrecord(filename)
-                    # print(filename)
-                    # plot the record to screen
-                    # wfdb.plot_wfdb(record=record, title='Example signals')
-                    #load a record using the 'rdrecord' function
-                    # record = wfdb.rdrecord(filename[0][:-4])
-                    #load the annotation file
-
+                elif filename[0].endswith('.dat'):
                     signal, field = wfdb.rdsamp(self.noext_fname, channels=[0], sampto=15000)
-                    # wfdb.plot_wfdb(record=record, title='Example signals')
-                    # df = record.to_dataframe()
-                    # print(df["ECG1"])
                     self.ecg = [element for list in signal for element in list] 
-                    self.x = np.arange(0,15000)
-                    # print(self.ecg)
-                    # print()
-                    # print(self.x)
-                    
+                    self.x = np.arange(0,15000)                   
                     ecg_line.setData(self.x, self.ecg)
-                    
-                    # record = wfdb.rdrecord(filename[0][:-4], channels=[1], sampfrom=0, sampto=1000)
-                    # ecg_list = os.listdir(str(filename[0][:-4]))
-                    # sample_list = [ecg[:-4] for ecg in ecg_list]
-                    # clean_sample_list = [ecg for ecg in sample_list if
-                    #                     ecg not in ['102-0', 'ANNOTA', 'REC', 'SHA256SUMS', 'mitd', 'x_m']]
-                    # all_samples = np.zeros((len(clean_sample_list), 650000, 2))
-                    # for idx, ecg in enumerate(clean_sample_list):
-                    #     record = wfdb.rdrecord(filename + ecg)
-                    #     all_samples[idx] = record.p_signal
 
             def save():
                 print('clicked save')
