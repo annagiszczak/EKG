@@ -43,12 +43,12 @@ class MainWindow(QMainWindow):
                 
                 filename = QFileDialog.getOpenFileName(self, 'Open file', './data/')
                 #open .ecg file
-                # if filename[0].endswith('.ecg'):
-                #     self.yholt = Holter(filename[0])
-                #     self.yholt.load_data()
-                #     self.x = np.arange(0,15000)
-                #     self.ecg = self.yholt.lead[0].data[0:15000]
-                #     ecg_line.setData(self.x, self.ecg)
+                if filename[0].endswith('.ecg'):
+                    self.yholt = Holter(filename[0])
+                    self.yholt.load_data()
+                    self.x = np.arange(0,15000)
+                    self.ecg = self.yholt.lead[0].data[0:15000]
+                    ecg_line.setData(self.x, self.ecg)
                 #open .dat file
                 # elif filename[0].endswith('.dat'):
                     # load a record using the 'rdrecord' function
