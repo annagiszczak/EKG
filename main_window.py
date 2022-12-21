@@ -26,6 +26,7 @@ class MainWindow(QMainWindow):
         self.ecg_cleaned = []
         self.peaks = []
         self.noext_fname = None
+        self.fs = None
 
         self.ecg_peaks_methods = ["neurokit", "pantompkins1985", "hamilton2002", "elgendi2010", "engzeemod2012", "gamboa2008"]
         self.ecg_clean_methods = ["neurokit", "biosppy", "pantompkins1985", "hamilton2002", "elgendi2010", "engzeemod2012"]        
@@ -48,8 +49,9 @@ class MainWindow(QMainWindow):
                 #open .ecg file
                 if filename[0].endswith('.ecg'):
                     self.holt = Holter(filename[0])
+                    self.fs = self.holt.sr
                     self.holt.load_data()
-                    self.x = np.arange(0,15000)
+                    self.x = np.arange(0,15000)/self.fs
                     self.ecg = self.holt.lead[0].data[0:15000]
                     ecg_line.setData(self.x, self.ecg)
 
@@ -57,7 +59,8 @@ class MainWindow(QMainWindow):
                 elif filename[0].endswith('.dat'):
                     signal, field = wfdb.rdsamp(self.noext_fname, channels=[0], sampto=15000)
                     self.ecg = [element for list in signal for element in list] 
-                    self.x = np.arange(0,15000)                   
+                    self.fs = field['fs']
+                    self.x = np.arange(0,15000)/self.fs              
                     ecg_line.setData(self.x, self.ecg)
 
             def save():
@@ -104,7 +107,7 @@ class MainWindow(QMainWindow):
                 print('open file')
             elif met != -1:
                 s, info = nk.ecg_peaks(self.ecg, method = self.ecg_peaks_methods[met], correct_artifacts = True)
-                self.peaks = info["ECG_R_Peaks"]
+                self.peaks = info["ECG_R_Peaks"]/self.fs
 
         def confirm():
             self.graphWidget.clear()
