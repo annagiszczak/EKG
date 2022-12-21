@@ -9,7 +9,7 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 
 from ishneholterlib import Holter
-# import wfdb
+import wfdb
 import os
 
 class MainWindow(QMainWindow):
@@ -25,6 +25,7 @@ class MainWindow(QMainWindow):
         self.ecg = []
         self.ecg_cleaned = []
         self.peaks = []
+        self.noext_fname = None
 
         self.ecg_peaks_methods = ["neurokit", "pantompkins1985", "hamilton2002", "elgendi2010", "engzeemod2012", "gamboa2008"]
         self.ecg_clean_methods = ["neurokit", "biosppy", "pantompkins1985", "hamilton2002", "elgendi2010", "engzeemod2012"]        
@@ -42,15 +43,18 @@ class MainWindow(QMainWindow):
             def open_file():
                 
                 filename = QFileDialog.getOpenFileName(self, 'Open file', './data/')
+                self.noext_fname = os.path.splitext(filename[0])[0]
+                print(self.noext_fname)
                 #open .ecg file
                 if filename[0].endswith('.ecg'):
-                    self.yholt = Holter(filename[0])
-                    self.yholt.load_data()
+                    self.holt = Holter(filename[0])
+                    self.holt.load_data()
                     self.x = np.arange(0,15000)
-                    self.ecg = self.yholt.lead[0].data[0:15000]
+                    self.ecg = self.holt.lead[0].data[0:15000]
                     ecg_line.setData(self.x, self.ecg)
+
                 #open .dat file
-                # elif filename[0].endswith('.dat'):
+                elif filename[0].endswith('.dat'):                   
                     # load a record using the 'rdrecord' function
                     # record = wfdb.rdrecord(filename)
                     # print(filename)
@@ -59,6 +63,18 @@ class MainWindow(QMainWindow):
                     #load a record using the 'rdrecord' function
                     # record = wfdb.rdrecord(filename[0][:-4])
                     #load the annotation file
+
+                    signal, field = wfdb.rdsamp(self.noext_fname, channels=[0], sampto=15000)
+                    # wfdb.plot_wfdb(record=record, title='Example signals')
+                    # df = record.to_dataframe()
+                    # print(df["ECG1"])
+                    self.ecg = [element for list in signal for element in list] 
+                    self.x = np.arange(0,15000)
+                    # print(self.ecg)
+                    # print()
+                    # print(self.x)
+                    
+                    ecg_line.setData(self.x, self.ecg)
                     
                     # record = wfdb.rdrecord(filename[0][:-4], channels=[1], sampfrom=0, sampto=1000)
                     # ecg_list = os.listdir(str(filename[0][:-4]))
@@ -125,6 +141,20 @@ class MainWindow(QMainWindow):
             for peak in self.peaks:
                     self.graphWidget.addItem(pg.InfiniteLine(peak, pen = pg.mkPen(color=(255, 0, 0))))
 
+        def calc():
+            intervals = []
+            for i in range(0, len(self.peaks)-1):
+                intervals.append(self.peaks[i+1] - self.peaks[i])
+            
+            if  self.noext_fname == None:
+                print('open file')
+            else:
+                with open(self.noext_fname + '.rr', 'x') as file:
+                    for item in intervals:
+                        # write each item on a new line
+                        file.write("%s\n" % item)
+                    print('Done')
+
         def create_ecg_clean_combo():
             ecg_clean_label = QLabel("Clean method")
             self.comboLayout.addWidget(ecg_clean_label)
@@ -156,6 +186,11 @@ class MainWindow(QMainWindow):
             confirm_button = QPushButton('Confirm')
             confirm_button.clicked.connect(lambda:confirm())
             self.comboLayout.addWidget(confirm_button)
+
+        def create_interval_button():
+            interval_button = QPushButton('Calc intervals RR')
+            interval_button.clicked.connect(lambda:calc())
+            self.comboLayout.addWidget(interval_button)
 
         create_menuBar()
 
@@ -189,4 +224,7 @@ class MainWindow(QMainWindow):
         create_confirm_button()
 
         self.comboLayout.addStretch()
+
+        create_interval_button()
+
         self.comboLayout.addStretch()
