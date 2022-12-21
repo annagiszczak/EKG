@@ -50,9 +50,9 @@ class MainWindow(QMainWindow):
                     self.ecg = self.yholt.lead[0].data[0:15000]
                     ecg_line.setData(self.x, self.ecg)
                 #open .dat file
-                # elif filename[0].endswith('.dat'):
+                elif filename[0].endswith('.dat'):
                     # load a record using the 'rdrecord' function
-                    # record = wfdb.rdrecord(filename)
+                    record = wfdb.rdrecord(filename)
                     # print(filename)
                     # plot the record to screen
                     # wfdb.plot_wfdb(record=record, title='Example signals')
