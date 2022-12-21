@@ -123,7 +123,7 @@ class MainWindow(QMainWindow):
             if  self.noext_fname == None:
                 print('open file')
             else:
-                with open(self.noext_fname + '.rr', 'x') as file:
+                with open(self.noext_fname + '.rr', 'w+') as file:
                     for item in intervals:
                         # write each item on a new line
                         file.write("%s\n" % item)
