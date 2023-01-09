@@ -70,11 +70,32 @@ class MainWindow(QMainWindow):
                 self.graphWidget.setXRange(0, 300)
                 self.graphWidget.setYRange(min(self.ecg)*1.1, max(self.ecg)*1.1)
 
-            def save():
-                print('clicked save')
+            # def save():
+            #     print('clicked save')
+
+            class helpDialog(QDialog):
+                def __init__(self):
+                    super().__init__()
+
+
+                    self.setWindowTitle("EKG - Help")
+                    self.setWindowIcon(QIcon('icons/app_icon.png'))
+                    self.resize(800, 600)
+
+                    okButton = QDialogButtonBox.Ok
+
+                    self.buttonBox = QDialogButtonBox(okButton)
+                    self.buttonBox.accepted.connect(self.accept)
+
+                    self.layout = QVBoxLayout()
+                    message = QLabel("DUUUUUUUUZO TEKSTU\n sdaasdas!")
+                    self.layout.addWidget(message)
+                    self.layout.addWidget(self.buttonBox)
+                    self.setLayout(self.layout)
 
             def help():
-                print('clicked help')
+                dlg = helpDialog()
+                dlg.exec()
 
             def quit():
                 QApplication.quit()
@@ -91,9 +112,9 @@ class MainWindow(QMainWindow):
             open_sim_action.triggered.connect(lambda:open_sim())
             self.openMenu.addAction(open_sim_action)
 
-            save_action = QAction('Save', self)
-            save_action.triggered.connect(lambda:save())
-            self.menuBar.addAction(save_action)
+            # save_action = QAction('Save', self)
+            # save_action.triggered.connect(lambda:save())
+            # self.menuBar.addAction(save_action)
 
             help_action = QAction('Help', self)
             help_action.triggered.connect(lambda:help())
