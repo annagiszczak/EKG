@@ -28,8 +28,8 @@ class MainWindow(QMainWindow):
         self.noext_fname = None
         self.fs = None
 
-        self.ecg_peaks_methods = ["neurokit", "pantompkins1985", "hamilton2002", "elgendi2010", "engzeemod2012", "gamboa2008"]
-        self.ecg_clean_methods = ["neurokit", "biosppy", "pantompkins1985", "hamilton2002", "elgendi2010", "engzeemod2012"]        
+        self.ecg_peaks_methods = ["neurokit", "pantompkins1985", "hamilton2002", "gamboa2008"]
+        self.ecg_clean_methods = ["neurokit", "biosppy", "pantompkins1985", "hamilton2002"]        
         
         def create_menuBar():
             def open_sim():
@@ -46,22 +46,29 @@ class MainWindow(QMainWindow):
                 filename = QFileDialog.getOpenFileName(self, 'Open file', './data/')
                 self.noext_fname = os.path.splitext(filename[0])[0]
                 print(self.noext_fname)
+                self.graphWidget.clear()
+
+                self.x = np.arange(0,15000)  
+                ecg_line = self.graphWidget.plot(self.x, self.ecg)
+
                 #open .ecg file
                 if filename[0].endswith('.ecg'):
                     self.holt = Holter(filename[0])
                     self.fs = self.holt.sr
                     self.holt.load_data()
-                    self.x = np.arange(0,15000)/self.fs
+                
                     self.ecg = self.holt.lead[0].data[0:15000]
-                    ecg_line.setData(self.x, self.ecg)
 
                 #open .dat file
                 elif filename[0].endswith('.dat'):
                     signal, field = wfdb.rdsamp(self.noext_fname, channels=[0], sampto=15000)
                     self.ecg = [element for list in signal for element in list] 
                     self.fs = field['fs']
-                    self.x = np.arange(0,15000)/self.fs              
-                    ecg_line.setData(self.x, self.ecg)
+                                
+                    
+                ecg_line.setData(self.x, self.ecg)
+                self.graphWidget.setXRange(0, 300)
+                self.graphWidget.setYRange(min(self.ecg)*1.1, max(self.ecg)*1.1)
 
             def save():
                 print('clicked save')
@@ -107,7 +114,7 @@ class MainWindow(QMainWindow):
                 print('open file')
             elif met != -1:
                 s, info = nk.ecg_peaks(self.ecg, method = self.ecg_peaks_methods[met], correct_artifacts = True)
-                self.peaks = info["ECG_R_Peaks"]/self.fs
+                self.peaks = info["ECG_R_Peaks"]
 
         def confirm():
             self.graphWidget.clear()
@@ -129,7 +136,7 @@ class MainWindow(QMainWindow):
                 with open(self.noext_fname + '.rr', 'w+') as file:
                     for item in intervals:
                         # write each item on a new line
-                        file.write("%s\n" % item)
+                        file.write("%s\n" % (item/self.fs))
                     print('Done')
 
         def create_ecg_clean_combo():
@@ -179,6 +186,11 @@ class MainWindow(QMainWindow):
         self.centralWidget.setLayout(self.gridLayout)
 
         self.graphWidget = pg.PlotWidget(background=QColor(69, 83, 100, 255)) #setting graph
+
+        self.graphWidget.setLabel('left', 'Voltage [mV]', color ='white', size = "20pt")
+        self.graphWidget.setLabel('bottom', 'samples', color ='white', size = "20pt")
+
+        self.graphWidget.setTitle("Wykres EKG", color="w", size="20pt")
 
         ecg_line = self.graphWidget.plot(self.x, self.ecg)
 
