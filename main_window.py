@@ -65,7 +65,9 @@ class MainWindow(QMainWindow):
                     self.ecg = [element for list in signal for element in list] 
                     self.fs = field['fs']
                                 
-                    
+                self.ecg_peaks.setCurrentIndex(-1)
+                self.ecg_clean.setCurrentIndex(-1)
+
                 ecg_line.setData(self.x, self.ecg)
                 self.graphWidget.setXRange(0, 300)
                 self.graphWidget.setYRange(min(self.ecg)*1.1, max(self.ecg)*1.1)
@@ -143,13 +145,16 @@ class MainWindow(QMainWindow):
                 self.peaks = info["ECG_R_Peaks"]
 
         def confirm():
-            self.graphWidget.clear()
+            if (self.ecg_clean.currentIndex() == -1 or self.ecg_peaks.currentIndex() == -1):
+                print('Choose clean method and peaks method')
+            else:
+                self.graphWidget.clear()
 
-            ecg_line = self.graphWidget.plot(self.x, self.ecg)
-            ecg_line.setData(self.x, self.ecg_cleaned)
+                ecg_line = self.graphWidget.plot(self.x, self.ecg)
+                ecg_line.setData(self.x, self.ecg_cleaned)
 
-            for peak in self.peaks:
-                    self.graphWidget.addItem(pg.InfiniteLine(peak, pen = pg.mkPen(color=(255, 0, 0))))
+                for peak in self.peaks:
+                        self.graphWidget.addItem(pg.InfiniteLine(peak, pen = pg.mkPen(color=(255, 0, 0))))
 
         def calc():
             intervals = []
@@ -179,6 +184,8 @@ class MainWindow(QMainWindow):
 
             ecg_clean.setCurrentIndex(-1)
 
+            return ecg_clean
+
         def create_ecg_peaks_combo():
             ecg_peak_label = QLabel("Find peak method")
             self.comboLayout.addWidget(ecg_peak_label)
@@ -191,6 +198,8 @@ class MainWindow(QMainWindow):
             self.comboLayout.addWidget(ecg_peaks)
 
             ecg_peaks.setCurrentIndex(-1)
+
+            return ecg_peaks
 
         def create_confirm_button():
             confirm_button = QPushButton('Confirm')
@@ -228,11 +237,11 @@ class MainWindow(QMainWindow):
 
         self.gridLayout.addLayout(self.comboLayout, 0, 1)
         
-        create_ecg_clean_combo()
+        self.ecg_clean = create_ecg_clean_combo()
 
         self.comboLayout.addStretch()
 
-        create_ecg_peaks_combo()
+        self.ecg_peaks = create_ecg_peaks_combo()
 
         self.comboLayout.addStretch()
 
