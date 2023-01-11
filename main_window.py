@@ -80,7 +80,7 @@ class MainWindow(QMainWindow):
 
                     self.setWindowTitle("EKG - Help")
                     self.setWindowIcon(QIcon('icons/app_icon.png'))
-                    self.resize(800, 600)
+                    self.resize(800, 400)
 
                     okButton = QDialogButtonBox.Ok
 
@@ -88,7 +88,12 @@ class MainWindow(QMainWindow):
                     self.buttonBox.accepted.connect(self.accept)
 
                     self.layout = QVBoxLayout()
-                    message = QLabel("DUUUUUUUUZO TEKSTU\n sdaasdas!")
+                    headertext = "Quick tutorial:"
+                    text = "Open contains 2 options:\n\tOpen file - open .ecg or .dat file\n\tOpen sim - open simulated ECG\n\nHelp - show this window\n\nQuit - quits the app\n\nClean method - combobox of clean ECG methods\n\nFind peaks method - combobox of methods to find peaks of ECG\n\nConfirm  - cleans graph and finds peaks using chosen method and marks them on the graph\n\nCalc RR intervals - calculates intervals between peaks and saves them to the file *.rr with the same name as the data file"  
+                    header = QLabel(headertext)
+                    header.setStyleSheet("font-weight: bold; font-size: 20px;")
+                    message = QLabel(text)
+                    self.layout.addWidget(header)
                     self.layout.addWidget(message)
                     self.layout.addWidget(self.buttonBox)
                     self.setLayout(self.layout)
