@@ -135,13 +135,13 @@ class MainWindow(QMainWindow):
             if len(self.x) == 0:
                 print('open file')
             elif met != -1:
-                self.ecg_cleaned = nk.ecg_clean(self.ecg, 1000, self.ecg_clean_methods[met])
+                self.ecg_cleaned = nk.ecg_clean(self.ecg, 200, method = self.ecg_clean_methods[met])
 
         def ecg_peaks_f(met):
             if len(self.x) == 0:
                 print('open file')
             elif met != -1:
-                s, info = nk.ecg_peaks(self.ecg, method = self.ecg_peaks_methods[met], correct_artifacts = True)
+                s, info = nk.ecg_peaks(self.ecg, 200, method = self.ecg_peaks_methods[met], correct_artifacts = True)
                 self.peaks = info["ECG_R_Peaks"]
 
         def confirm():
